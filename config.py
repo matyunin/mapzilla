@@ -1,1 +1,1 @@
-SQLALCHEMY_DATABASE_URI = "postgresql://mapzilla:ftbikatel@localhost/mapzilla"
+SQLALCHEMY_DATABASE_URI = 'postgresql://mapzilla:ftbikatel@localhost/mapzilla'
