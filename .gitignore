@@ -4,6 +4,9 @@ nohup.out
 # C extensions
 *.so
 
+# Data
+db
+
 # Packages
 *.egg
 *.egg-info

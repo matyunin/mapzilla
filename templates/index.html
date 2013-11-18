@@ -3,9 +3,13 @@
   <head>
     <meta charset=utf-8>
     <title>Mapzilla</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
+    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/json2.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/underscore.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/backbone.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
   </head>
   <body>
-    <div id="body"></div>
+    <div id="body">{{ dde }}</div>
   </body>
 </html>
