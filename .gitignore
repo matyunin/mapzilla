@@ -6,6 +6,8 @@ nohup.out
 
 # Data
 db
+logs
+tmp
 
 # Packages
 *.egg
@@ -15,7 +17,6 @@ build
 eggs
 parts
 bin
-tmp
 var
 sdist
 develop-eggs
