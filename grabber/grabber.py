@@ -6,4 +6,5 @@ def grab2():
 
     proxy = MzProxyHidemyass()
     proxies = proxy.list()
+
     pprint.pprint(proxies)
