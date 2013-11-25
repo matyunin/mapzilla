@@ -1,27 +1,117 @@
-import urllib
-import urllib2
+import cssutils
+from cssutils import css
+import requests
+from BeautifulSoup import BeautifulSoup
 from proxy import MzProxy
-
-
-class MzProxyHidemyassRedirectHandler(urllib2.HTTPRedirectHandler):
 
 
 class MzProxyHidemyass(MzProxy):
 
-    url = 'http://hidemyass.com/proxy-list/search-226716/'
+    url = 'http://hidemyass.com/proxy-list/'
+    cookies = {}
+    data = {}
+    proxies = []
 
-    def http_error_302(self, req, fp, code, msg, headers):
-        return urllib2.HTTPRedirectHandler.http_error_302(self, req, fp, code, msg, headers)
-
-    http_error_301 = http_error_303 = http_error_307 = http_error_302
+    headers = {
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4,da;q=0.2,de;q=0.2,fr;q=0.2,ja;q=0.2,uk;q=0.2',
+        'Cache-Control': 'max-age=0',
+        'Connection': 'keep-alive',
+        'Cookie': 'PHPSESSID=2et6icdkv3hvajvn3fd6g9nd60;',
+        'Host': 'hidemyass.com',
+        'Referer': 'http://hidemyass.com/proxy-list/',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.57 Safari/537.36'
+    }
 
     def __init__(self):
         super(MzProxyHidemyass, self).__init__(self.url)
+        self.refresh_url()
+
+    def list(self):
+        soup = BeautifulSoup(self.html)
+        table = soup.find(id='listtable')
+        table.thead.decompose()
+
+        for tr in table.findAll('tr'):
+            tds = tr.findAll('td')
+
+            address = {
+                'host': self.parse_host(tds, self.parse_css(tr.find('style').string)),
+                'port': self.parse_port(tds),
+                'type': self.parse_type(tds),
+                'speed': self.parse_speed(tds),
+                'country': self.parse_country(tds)
+            }
+
+            self.proxies.append(address)
+
+        return self.proxies
+
+    @staticmethod
+    def parse_css(css):
+        style = {}
+
+        for rule in cssutils.parseString(css):
+            if rule.type == rule.STYLE_RULE:
+                style[rule.selectorText.replace('.', '')] = not rule.style.display.lower() == 'none'
+
+        return style
+
+    @staticmethod
+    def parse_host(tds, style):
+        ip = []
+        container = tds[1].find('span')
+
+        container.find('style').decompose()
+
+        for block in container:
+            if type(block).__name__ == 'NavigableString':
+                ip.append(block.string)
+                continue
+
+            block_style = block.get('style')
+            block_class = block.get('class')
+
+            if block_style:
+                css_style = css.CSSStyleDeclaration(cssText=block_style)
+
+                if css_style.getPropertyCSSValue('display').cssText.lower() == 'none':
+                    continue
+
+            if block_class in style and not style[block_class]:
+                continue
+
+            if block.string is None:
+                continue
+
+            ip.append(block.string)
+
+        return ''.join(ip)
+
+    @staticmethod
+    def parse_port(tds):
+        return int(tds[2].string)
+
+    @staticmethod
+    def parse_speed(tds):
+        css_string = tds[4].find('div').find('div').get('style')
+        css_style = css.CSSStyleDeclaration(cssText=css_string)
+
+        return int(css_style.getPropertyCSSValue('width').cssText.strip('%'))
+
+    @staticmethod
+    def parse_type(tds):
+        return tds[6].string.strip()
+
+    @staticmethod
+    def parse_country(tds):
+        return tds[3].find('span').find(
+            text=True,
+            recursive=False
+        ).strip()
 
     def refresh_url(self):
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1'
-        }
+        print '[?]', 'Retrieving new url via \'%s\'' % self.url
 
         data = {
             'ac': 'on',
@@ -103,12 +193,15 @@ class MzProxyHidemyass(MzProxy):
             'sortBy': 'response_time'
         }
 
-        data = urllib.urlencode(data)
+        r = requests.post(
+            self.url,
+            data=data,
+            headers=self.headers,
+            cookies=self.cookies,
+            allow_redirects=True
+        )
 
-        opener = urllib2.build_opener(MzProxyHidemyassRedirectHandler)
-        urllib2.install_opener(opener)
+        self.url = r.url
+        self.cookies['PHPSESSID'] = r.cookies['PHPSESSID']
 
-        req = urllib2.Request(self.url, data, headers)
-        response = urllib2.urlopen(req)
-
-        print response.geturl()
+        print '[!]', 'Retrieved \'%s\'' % self.url

@@ -1,17 +1,25 @@
-import urllib
-from lxml import html
-import pprint
+import requests
 
 
 class MzProxy(object):
 
+    html = ''
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) \
+        AppleWebKit/537.1 (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1'
+    }
+
     def __init__(self, url):
         self.url = url
-        self.tree = html.fromstring(urllib.urlopen(self.url).read())
 
-    def get_links(self):
+        self.req = requests.post(
+            self.url,
+            data=self.data,
+            cookies=self.cookies,
+            headers=self.headers,
+            allow_redirects=True
+        )
 
-        for tr in self.tree.xpath("//table[@id='listtable']//tr"):
-            for td in tr.xpath("//td"):
-                print td, ']' + '-' * 30
-                print html.tostring(td, pretty_print=True)
+        self.url = self.req.url
+        self.html = self.req.text
