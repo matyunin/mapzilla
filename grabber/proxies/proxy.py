@@ -1,4 +1,5 @@
 import requests
+import json
 
 
 class MzProxy(object):
@@ -23,3 +24,13 @@ class MzProxy(object):
 
         self.url = self.req.url
         self.html = self.req.text
+
+    def save_json(self, filename):
+        with open(filename, 'w') as outfile:
+            json.dump(
+                self.proxies,
+                outfile,
+                sort_keys=True,
+                indent=4,
+                separators=(',', ': ')
+            )
