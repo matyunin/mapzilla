@@ -27,7 +27,7 @@ class MzProxyHidemyass(MzProxy):
         super(MzProxyHidemyass, self).__init__(self.url)
         self.refresh_url()
 
-    def list(self):
+    def parse(self):
         soup = BeautifulSoup(self.html)
         table = soup.find(id='listtable')
         table.thead.decompose()
@@ -44,8 +44,6 @@ class MzProxyHidemyass(MzProxy):
             }
 
             self.proxies.append(address)
-
-        return self.proxies
 
     @staticmethod
     def parse_css(css):
