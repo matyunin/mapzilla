@@ -41,4 +41,5 @@ nosetests.xml
 .project
 .pydevproject
 .idea
+.idea*
 .idea/*
