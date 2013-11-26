@@ -2,6 +2,8 @@ from flask import Flask, render_template
 from flask.ext.pymongo import PyMongo
 from flask.ext.sqlalchemy import SQLAlchemy
 
+# <!--http://www.benzin-price.ru/-->
+
 # Setup application
 app = Flask(__name__)
 
