@@ -1,5 +1,5 @@
 #!/usr/bin/env python
 
-from grabber import *
+import os
 
-grab2()
+basedir = os.path.abspath(__file__ + '/../..')
