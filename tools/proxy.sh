@@ -23,8 +23,9 @@ from grabber.proxies.hidemyass import *
 print 'Getting proxy list from HideMyAss.com'
 
 proxy = MzProxyHidemyass()
+print proxy.get_json_path()
 proxy.parse()
-proxy.save_json('%s/db/proxy/hidemyass_com.json' % basedir)
+proxy.save_json()
 
 # Fix changes
 

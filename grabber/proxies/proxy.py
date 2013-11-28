@@ -1,10 +1,13 @@
 import requests
 import json
+import os
 
 
 class MzProxy(object):
 
     html = ''
+    config = {}
+    common_config = {}
 
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) \
@@ -12,6 +15,8 @@ class MzProxy(object):
     }
 
     def __init__(self, url):
+        self.prepare_config()
+
         self.url = url
 
         self.req = requests.post(
@@ -25,8 +30,21 @@ class MzProxy(object):
         self.url = self.req.url
         self.html = self.req.text
 
-    def save_json(self, filename):
-        with open(filename, 'w') as outfile:
+    def get_json_path(self):
+        basedir = os.path.abspath(__file__ + '/../../..')
+
+        return basedir + '/' + self.config['dump']['json']['file']
+
+    def prepare_config(self):
+        config_file = open('%s/config.json' % os.path.abspath(__file__ + '/../'))
+
+        self.common_config = json.load(config_file)
+        self.config = self.common_config['proxy'][self.__class__.__name__]
+
+        config_file.close()
+
+    def save_json(self):
+        with open(self.get_json_path(), 'w') as outfile:
             json.dump(
                 self.proxies,
                 outfile,

@@ -1,0 +1,18 @@
+{
+    "proxy": {
+        "MzProxy": {
+            "dump": {
+                "json": {
+                    "file": "db/proxy/common.json"
+                }
+            }
+        },
+        "MzProxyHidemyass": {
+            "dump": {
+                "json": {
+                    "file": "db/proxy/hidemyass_com.json"
+                }
+            }
+        }
+    }
+}
