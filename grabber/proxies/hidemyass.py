@@ -23,9 +23,11 @@ class MzProxyHidemyass(MzProxy):
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.57 Safari/537.36'
     }
 
-    def __init__(self):
-        super(MzProxyHidemyass, self).__init__(self.url)
-        self.refresh_url()
+    def __init__(self, **kwargs):
+        super(MzProxyHidemyass, self).__init__(self.url, **kwargs)
+
+        if not kwargs.get('quiet', True):
+            self.refresh_url()
 
     def parse(self):
         soup = BeautifulSoup(self.html)
@@ -109,8 +111,6 @@ class MzProxyHidemyass(MzProxy):
         ).strip()
 
     def refresh_url(self):
-        print '[?]', 'Retrieving new url via \'%s\'' % self.url
-
         data = {
             'ac': 'on',
             'c[]': [
@@ -201,5 +201,3 @@ class MzProxyHidemyass(MzProxy):
 
         self.url = r.url
         self.cookies['PHPSESSID'] = r.cookies['PHPSESSID']
-
-        print '[!]', 'Retrieved \'%s\'' % self.url
